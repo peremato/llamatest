@@ -13,5 +13,6 @@ target_include_directories(llama PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(llama fmt::fmt)
 
 add_executable(naive AoSCode.cpp)
+add_executable(killer SoACode.cpp)
 
 

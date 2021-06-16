@@ -22,31 +22,31 @@ struct Vec {
         return *this;
     }
 
-    inline auto operator*=(Vec v) -> Vec& {
+    inline auto operator*=(const Vec& v) -> Vec& {
         x *= v.x;
         y *= v.y;
         z *= v.z;
         return *this;
     }
 
-    inline auto operator+=(Vec v) -> Vec& {
+    inline auto operator+=(const Vec& v) -> Vec& {
         x += v.x;
         y += v.y;
         z += v.z;
         return *this;
     }
 
-    inline auto operator-=(Vec v) -> Vec& {
+    inline auto operator-=(const Vec& v) -> Vec& {
         x -= v.x;
         y -= v.y;
         z -= v.z;
         return *this;
     }
 
-    friend inline auto operator+(Vec a, Vec b) -> Vec { return a += b; }
-    friend inline auto operator-(Vec a, Vec b) -> Vec { return a -= b; }
-    friend inline auto operator*(Vec a, FP s) -> Vec { return a *= s; }
-    friend inline auto operator*(Vec a, Vec b) -> Vec { return a *= b; }
+    friend inline auto operator+(const Vec& a, const Vec& b) -> Vec { return Vec(a) += b; }
+    friend inline auto operator-(const Vec& a, const Vec& b ) -> Vec { return Vec(a) -= b; }
+    friend inline auto operator*(const Vec& a, FP s) -> Vec { return Vec(a) *= s; }
+    friend inline auto operator*(const Vec& a, const Vec&  b) -> Vec { return Vec(a) *= b; }
 };
 
 using Pos = Vec;

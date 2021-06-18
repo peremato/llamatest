@@ -3,7 +3,7 @@ project(llamatest)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_FLAGS "-march=native -ffast-math")
+set(CMAKE_CXX_FLAGS "-ffast-math -fno-math-errno -march=core-avx2")
 
 find_package(Boost)
 find_package(fmt)
@@ -14,5 +14,5 @@ target_link_libraries(llama fmt::fmt)
 
 add_executable(naive AoSCode.cpp)
 add_executable(killer SoACode.cpp)
-
+add_executable(mini Mini.cpp)
 

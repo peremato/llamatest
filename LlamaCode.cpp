@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 
-constexpr auto Mapping = 0; /// 0 AoS, 1 SoA, 2 AoSoA
+constexpr auto Mapping = 1; /// 0 AoS, 1 SoA, 2 AoSoA
 constexpr auto PROBLEM_SIZE = 64 * 1024;
 constexpr auto STEPS = 5;
 constexpr auto AoSoALanes = 16;

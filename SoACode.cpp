@@ -4,8 +4,8 @@
 #include <array>
 #include <iostream>
 
-constexpr auto PROBLEM_SIZE = 1 * 1024;
-constexpr auto STEPS = 5;
+constexpr auto PROBLEM_SIZE = 64 * 1024;
+constexpr auto STEPS = 1;
 
 using FP = float;
 constexpr FP TIMESTEP = 0.0001f;
@@ -13,9 +13,16 @@ constexpr FP EPS2 = 0.01f;
 
 //---Possibly generated Generated code ()
 struct Vec {
+    FP* local;
     FP&& x;
     FP&& y;
     FP&& z;
+
+    inline Vec() : local{new FP[3]}, x{std::move(local[0])}, y{std::move(local[1])}, z{std::move(local[2])} {x=y=z=0;}
+    inline Vec(FP&& a, FP&& b, FP&& c) : local{0}, x{std::move(a)}, y{std::move(b)}, z{std::move(c)} {}
+    inline Vec(const Vec& v): local{0}, x{std::move(v.x)}, y{std::move(v.y)}, z{std::move(v.z)} {}
+    inline ~Vec() { if(local) std::cout << "delete" << std::endl; delete [] local; }
+    inline Vec& operator= ( const Vec& v) { x = v.x; y = v.y; z = v.z; return *this; }
 
     inline auto operator*=(FP s) -> Vec& {
         x *= s;
@@ -45,10 +52,10 @@ struct Vec {
         return *this;
     }
 
-    friend inline auto operator+(const Vec& a, const Vec& b) -> Vec { Vec r{0,0,0}; r += a; r += b; return r; }
-    friend inline auto operator-(const Vec& a, const Vec& b ) -> Vec { Vec r{0,0,0}; r += a; r -= b; return r; }
-    friend inline auto operator*(const Vec&  a, FP s) -> Vec { Vec r{0,0,0}; r += a; r *= s; return r; }
-    friend inline auto operator*(const Vec&  a, const Vec&  b) -> Vec { Vec r{0,0,0}; r += a; r *= b; return r; }
+    friend inline auto operator+(const Vec& a, const Vec& b) -> Vec { return Vec(a) += b; }
+    friend inline auto operator-(const Vec& a, const Vec& b ) -> Vec { return Vec(a) -= b; }
+    friend inline auto operator*(const Vec&  a, FP s) -> Vec { return Vec(a) *= s; }
+    friend inline auto operator*(const Vec&  a, const Vec&  b) -> Vec { return Vec(a) *= b; }
 };
 
 using Pos = Vec;
@@ -88,17 +95,20 @@ inline void pPInteraction(Particle& p1, const Particle& p2) {
     const FP s = p2.mass * invDistCube;
     distance *= s * TIMESTEP;
     p1.vel += distance;
+    //std::cout << "dist = " << distance.x << std::endl;
 }
 
 void update(Particles<PROBLEM_SIZE>& particles) {
     for (std::size_t i = 0; i < PROBLEM_SIZE; i++) {
         Particle pi = particles[i];
-        std::cout << pi.pos.x << std::endl;
+        //std::cout << "in  " << pi.vel.x << std::endl;
 
         #pragma GCC ivdep
         for (std::size_t j = 0; j < PROBLEM_SIZE; j++)
             pPInteraction(pi, particles[j]);
-        //particles[i].vel = pi.vel;
+        particles[i].vel = pi.vel;
+        //std::cout << "out " << particles[i].vel.x << std::endl;
+
     }
 }
 
@@ -108,23 +118,7 @@ void move(Particles<PROBLEM_SIZE>& particles) {
         particles[i].pos += particles[i].vel * TIMESTEP;
 }
 
-struct A {
-    int&& a;
-};
-
-
-
 int main(int argc, char** argv) {
-
-
-    int aa[10];
-
-    A c{999};
-
-    A b{ std::move(aa[0]) };
-    b.a = 99;
-
-    std::cout << aa[0] << std::endl;
 
     Particles<PROBLEM_SIZE> particles;
 
@@ -140,7 +134,6 @@ int main(int argc, char** argv) {
         p.vel.z = distribution(engine) / FP(10);
         p.mass = distribution(engine) / FP(100);
     }
-    std::cout << "here " << particles[10].pos.x << std::endl;
 
     for (std::size_t s = 0; s < STEPS; ++s) {
         update(particles);
